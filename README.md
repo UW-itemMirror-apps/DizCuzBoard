@@ -4,8 +4,8 @@ Team Collaboration Tool By Sissi and Tex
 Readme For Collaboard
 
 
-1.What is it supposed to do? Why is this useful? For whom?
--Collaboard is meant to be a vitual postit board for team discussions.
+1.What is it supposed to do? Why is this useful? For whom
+- Collaboard is meant to be a vitual postit board for team discussions.
 -It facilitates discussion virtually for students.
 
 2.Does it work?
@@ -31,7 +31,7 @@ Is the user experience (UX) good? Can users figure out how things work and what 
 
 
 As appropriate, does it provide the functionality of available “horizontal” services? i.e., as appropriate (depending upon your app and the features it's meant to provide) does it support x/y positioning? ordering? some ability to find and save relevant material per folder
-- uses the same X Y coordinate horizontal service as our team project infinitysort.
+- uses the same X-Y coordinate horizontal service as our team project infinitysort.
 
 How well does it scale? (e.g., through use of Dropbox folders to organize information)?
 - Use dropbox folders and shared folders.
@@ -40,12 +40,12 @@ Does it make good use of metadata?
 - Uses meta data for positioning, title, content, and resource.
 
 Can people working from different devices and OS platforms use the app collaboratively? (e.g. leveraging support for sharing and syncing of Dropbox folders).
-- Collaboration is possible over PC in most platforms(windows, OSX, Linux) and comtemporary internet browsers( chrome,irebox, etc)
+- Collaboration is possible over PC in most platforms(windows, OSX, Linux) and comtemporary internet browsers( chrome, firebox, etc)
 - Mobile platform can only view.
 
 Can users mix & match your app with others to work on the same information?
-- Total possible if the other app uses our namespace 'DizCusBoard'
+- Totally possible if the other app uses our namespace 'DizCusBoard'
 - They can choose to decide what to do with the attributes like title, content, resource and xy positions.
 
-Does your app persist state so that if A.. the user dismisses the current  browser window in which which the app is running and then B. later goes back to your app (iany browser window) they can get back to their information in the same state as they last saw it (same structure, same content, same layout and appearance)?
-- Full saves the state if the autosave is complete before the users closes the window 
+Does your app persist state so that if A. the user dismisses the current  browser window in which which the app is running and then B. later goes back to your app (iany browser window) they can get back to their information in the same state as they last saw it (same structure, same content, same layout and appearance)?
+- Fully saves the state if the autosave is complete before the users closes the window 
