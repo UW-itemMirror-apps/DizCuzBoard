@@ -23,7 +23,7 @@ Priority I features mostly functional
 Priority II feature mostly functional, except for resizing issues and iframe stealing click event 
 - add resources to note: the resource input box is where you can input a piece of html code to include videos, html links, images and iframe widgets
 
-Priority III feature partially functional, FOUC issues not dealt with, loading requires a bit of time, out of sync problems and sometimes changes revert back 
+Priority III feature mostly functional, but there are still a lot of issues, FOUC issues not dealt with, loading requires a bit of time, out of sync problems happens when changes and add new note happen at the same time, sometimes changes revert back to refresh loop interval override, extra layer of noteService should be merged with the itemMirror wrapper,etc 
 - collaboration: enter where the folder you shared and start collaborating
 
 
@@ -42,10 +42,11 @@ Priority III feature partially functional, FOUC issues not dealt with, loading r
 - uses the same X-Y coordinate horizontal service as our team project infinitysort.
 
 5.How well does it scale? (e.g., through use of Dropbox folders to organize information)?
-- Use dropbox folders and shared folders.
+- Uses dropbox folders and shared folders.
 
 6.Does it make good use of metadata?
-- Uses meta data for positioning, title, content, and resource.
+- Uses meta data for positioning, title, content, and resource and are stored in the dropbox Xooml2 fragment.
+- Uses phantom associations.
 
 7.Can people working from different devices and OS platforms use the app collaboratively? (e.g. leveraging support for sharing and syncing of Dropbox folders).
 - Collaboration is possible over PC in most platforms(windows, OSX, Linux) and comtemporary internet browsers( chrome, firebox, etc)
