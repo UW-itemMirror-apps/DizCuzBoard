@@ -12,6 +12,7 @@ Please click allow insecure connection to continue to the site.
 - It facilitates discussio for students.
 
 2.Does it work?
+
 Functions
 - Add note: click on the green plus button on the lower left side of the screen, next to the user name
 - delete note: place mouse over the note you wanted to delete, and click on the delete button
