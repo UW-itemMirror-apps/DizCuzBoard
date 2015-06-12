@@ -20,7 +20,7 @@ Functionalities:
 
 
 
-Is the user experience (UX) good? Can users figure out how things work and what to do without special training or the need to see a lot of documentation?
+3.Is the user experience (UX) good? Can users figure out how things work and what to do without special training or the need to see a lot of documentation?
 - Most things are done according to conventions, like drag and drop
 - Notes moves to front when mouse is over
 - Delete requires confirmation
@@ -30,22 +30,22 @@ Is the user experience (UX) good? Can users figure out how things work and what 
 
 
 
-As appropriate, does it provide the functionality of available “horizontal” services? i.e., as appropriate (depending upon your app and the features it's meant to provide) does it support x/y positioning? ordering? some ability to find and save relevant material per folder
+4.As appropriate, does it provide the functionality of available “horizontal” services? i.e., as appropriate (depending upon your app and the features it's meant to provide) does it support x/y positioning? ordering? some ability to find and ave relevant material per folder
 - uses the same X-Y coordinate horizontal service as our team project infinitysort.
 
-How well does it scale? (e.g., through use of Dropbox folders to organize information)?
+5.How well does it scale? (e.g., through use of Dropbox folders to organize information)?
 - Use dropbox folders and shared folders.
 
-Does it make good use of metadata?
+6.Does it make good use of metadata?
 - Uses meta data for positioning, title, content, and resource.
 
-Can people working from different devices and OS platforms use the app collaboratively? (e.g. leveraging support for sharing and syncing of Dropbox folders).
+7.Can people working from different devices and OS platforms use the app collaboratively? (e.g. leveraging support for sharing and syncing of Dropbox folders).
 - Collaboration is possible over PC in most platforms(windows, OSX, Linux) and comtemporary internet browsers( chrome, firebox, etc)
 - Mobile platform can only view.
 
-Can users mix & match your app with others to work on the same information?
+8.Can users mix & match your app with others to work on the same information?
 - Totally possible if the other app uses our namespace 'DizCusBoard'
 - They can choose to decide what to do with the attributes like title, content, resource and xy positions.
 
-Does your app persist state so that if A. the user dismisses the current  browser window in which which the app is running and then B. later goes back to your app (iany browser window) they can get back to their information in the same state as they last saw it (same structure, same content, same layout and appearance)?
+9.Does your app persist state so that if A. the user dismisses the current  browser window in which which the app is running and then B. later goes back to your app (iany browser window) they can get back to their information in the same state as they last saw it (same structure, same content, same layout and appearance)?
 - Fully saves the state if the autosave is complete before the users closes the window 
