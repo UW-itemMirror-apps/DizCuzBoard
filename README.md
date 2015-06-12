@@ -4,6 +4,7 @@ Team Collaboration Tool By Sissi and Tex
 For the site, please click: <a href="https://webhost.ischool.uw.edu/~sunteng/bcmderFireMirror/app/"> DizCuzBoard</a>.
 Please click allow insecure connection to continue to the site.
 
+To run the code, just put them on a http server and they are good to go. No nodejs required. 
 
 # Readme
 
