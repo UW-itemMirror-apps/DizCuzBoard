@@ -1,22 +1,25 @@
 # DizCuzBoard
 Team Collaboration Tool By Sissi and Tex
 
-Readme For Collaboard
+For the site, please click: <a href="https://webhost.ischool.uw.edu/~sunteng/bcmderFireMirror/app/"> DizCuzBoard</a>.
+Please click allow insecure connection to continue to the site.
 
 
-1.What is it supposed to do? Why is this useful? For whom
+# Readme
+
+1.What is it supposed to do? Why is this useful? For whom?
 - Collaboard is meant to be a vitual postit board for team discussions.
--It facilitates discussion virtually for students.
+- It facilitates discussio for students.
 
 2.Does it work?
-Functionalities:
--Add note: click on the green plus button on the lower left side of the screen, next to the user name
--delete note: place mouse over the note you wanted to delete, and click on the delete button
--edit note: place mouse over the note you wanted to edit, and click on the edit button
--move note:  click the note and drag it to where you want to place it
--add resources to note: the resource input box is where you can input a piece of html code to include videos, html links, images and iframe widgets
--adding links and resources: type the html source code in the resource section to add html content to the notes
--collaboration: enter where the folder you shared and start collaborating
+Functions
+- Add note: click on the green plus button on the lower left side of the screen, next to the user name
+- delete note: place mouse over the note you wanted to delete, and click on the delete button
+- edit note: place mouse over the note you wanted to edit, and click on the edit button
+- move note:  click the note and drag it to where you want to place it
+- add resources to note: the resource input box is where you can input a piece of html code to include videos, html links, images and iframe widgets
+- adding links and resources: type the html source code in the resource section to add html content to the notes
+- collaboration: enter where the folder you shared and start collaborating
 
 
 
