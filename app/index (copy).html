@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en" >
+  <head>
+    <title>Angular Material - Starter App</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+
+
+    <!--below are style dependencies-->
+    <link rel='stylesheet' href='./app/assets/Roboto.css'>
+    <link rel="stylesheet" href="./app/bower_components/angular-material/angular-material.css"/>
+    <link rel="stylesheet" href="./app/assets/app.css"/>
+  </head>
+
+
+ <!-- calls the starterApp module, set the layout and uses the UserController-->
+  <body ng-app="starterApp" layout="column" ng-controller = "eventCtrl as ec" style="max-width:100%;overflow-x:hidden">
+  <!--layout is based on flexbox, layout=row specifies to array the children in a horizontal row-->
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!---------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------------------------->
+
+
+<md-content flex ng-mouseup="onMouseRelease($event)" ng-controller="noteSpaceCtrl as nsc" >
+
+
+
+
+<md-button ng-attr-id="{{note.id}}" class="md-raised animation" style="text-transform:none;position:absolute;width:auto;top:0;left:0;height:20%" ng-style="{'top':note.y+'px','left':note.x+'px'}" ng-mousedown="onMouseDown($event)" ng-repeat="note in notes">{{note.content}}<md-button flex ng-click="deleteNote(note.id)">Close</md-button>
+</md-button>
+
+<!------------------------------------------------------------------------------------------>
+
+  <!--the bottom toolbar-->
+    <div class="md-whiteframe-z1" layout="row" style="position:fixed;bottom:0px;left:0px;background-color:white" layout-padding>
+      <div layout="column" layout-align="center" >
+        <div >User Dummy</div>
+        <md-progress-linear  class="md-primary md-hue-1" md-mode="determinate" ng-value="50"></md-progress-linear>
+      </div>
+      <md-button class="md-icon-button" ng-click="addNewNote()">
+        <md-icon md-svg-icon="new" alt="icon" style="color:green"    ></md-icon>
+      </md-button>
+      <md-button class="md-icon-button" ng-click="login()">
+        <md-icon md-svg-icon="group"  alt="icon" style="color:blue"    ></md-icon>
+      </md-button>
+      <md-button class="md-icon-button" ng-click="refreshIM()">
+        <md-icon md-svg-icon="checklist"  alt="icon" style="color:blue"    ></md-icon>
+      </md-button>
+    </div>
+    <!--/the bottom toolbar-->
+</md-content>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!---------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------------------------->
+
+
+
+
+
+
+
+
+  
+    
+
+
+<!---------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------------------------->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!--below are all the external dependencies-->
+    <script src="./app/bower_components/angular/angular.js"></script>
+    <script src="./app/bower_components/angular-animate/angular-animate.js"></script>
+    <script src="./app/bower_components/angular-aria/angular-aria.js"></script>
+    <script type="text/javascript" src="./app/bower_components/angular-material/angular-material.js"></script>
+    <script type="text/javascript" src="./app/bower_components/item-mirror/item-mirror.js"></script>
+    <script type="text/javascript" src="./app/bower_components/dropbox-build/dropbox.js"></script>
+    <script src="./app/dependencies/socket.io-1.2.0.js"></script>
+    <script src="./app/dependencies/jquery-1.11.2.js"></script>
+
+
+    <!--below is where all the controller dependencies should be-->
+
+
+    <!--app.js embedded in the html-->
+    <script type="text/javascript">
+      
+          //using ngMaterial(material design package)
+          var app = angular
+              .module('starterApp', ['ngMaterial'])
+              .config(function($mdThemingProvider, $mdIconProvider){//configuring theme and icon
+
+                  $mdIconProvider
+                      .defaultIconSet("./app/assets/svg/avatars.svg", 128)
+                      .icon("menu"       , "./app/assets/svg/menu.svg"        , 40)//sets the iconName, src, iconSize 
+                      .icon("share"      , "./app/assets/svg/share.svg"       , 40)//for later use
+                      .icon("google_plus", "./app/assets/svg/google_plus.svg" , 512)//$mdIcon('icon name')
+                      .icon("hangouts"   , "./app/app/assets/svg/hangouts.svg"    , 512)
+                      .icon("twitter"    , "./app/assets/svg/twitter.svg"     , 512)
+                      .icon("phone"      , "./app/assets/svg/phone.svg"       , 512)//icons after this line needs to be credited
+                      .icon("user","./app/assets/svg/user7.svg", 40)
+                      .icon("group","./app/assets/svg/connected22.svg", 40)
+                      .icon("namecard","./app/assets/svg/male66.svg", 40)
+                      .icon("nexus","./app/assets/svg/marketing8.svg", 40)
+                      .icon("message","./app/assets/svg/speech95.svg", 40)
+                      .icon("checklist","./app/assets/svg/election2.svg", 40)
+                      .icon("clock","./app/assets/svg/clock218.svg", 40)
+                      .icon("right","./app/assets/svg/right.svg", 40)
+                      .icon("left","./app/assets/svg/left.svg", 40)
+                      .icon("new","./app/assets/svg/addnew.svg",40);
+                      
+                      
+                      $mdThemingProvider.theme('default')//sets the theme
+                          .primaryPalette('blue')//sets the primary theme color to brown
+                          .accentPalette('light-blue');//sets the primary theme color to red
+
+              });
+              
+              //controller for handling all events on page
+              app.controller('eventCtrl',function($scope,$mdSidenav,$mdMedia){
+                  this.probeScreenSize = $mdMedia;
+                   
+              });
+              
+              app.filter('toArray', function(){
+				    return function (items) { 
+				        var filtered = [];
+				        angular.forEach(items, function(item){
+				            filtered.push(item);
+				        });
+				        return filtered;
+				    };
+				});
+
+              //controls the left navigation bar by providing methods for detecting screen size and figuring out time passes
+              //controller for the chat functionality, is currently empty
+              app.controller('noteSpaceCtrl',function($scope,$q){
+                     //handles local ng-click events the opens or closes interfaces
+                  $scope.notes = {};
+                  $scope.itemMirror = null;
+                  $scope.dbc = null;
+                  
+                  $scope.startMirrorConnectionThread = function(){
+                  	var defered = $q.defer();
+                    console.log("Testing item mirror");
+                    var dropboxClientCredentials = {
+                          key:'yd9mzxt3wzy4age',
+                          secret:'xyf9f7gpg4q8owa'
+                        };
+
+                    var dropboxClient = new Dropbox.Client(dropboxClientCredentials);
+                    var auth = new Dropbox.AuthDriver.Popup({
+                              receiverUrl: 'localhost:3000/app/misc/oauth_receiver.html'
+                    });
+
+	                   defered.resolve(dropboxClient, auth);	
+
+                    return defered.promise;
+                  };
+
+                    
+                  $scope.login = function(){
+                  	$scope.startMirrorConnectionThread().then( function(dropboxClient,auth){
+
+	                  	dropboxClient.authDriver(auth);
+
+
+	                    dropboxClient.authenticate(function (error, client){
+	                         if(!error){
+	                            authenticatedClient = client;
+	                         }else{
+	                            console.log("error in authentication");
+	                         } 
+	                    });
+
+	                    var rootGroupingItemURI = '/';
+
+	                    $scope.dbc = dropboxClient;
+
+	                    dropboxXooMLUtility = {
+	                      fragmentURI: '/XooML2.xml',
+	                      driverURI: 'DropboxXooMLUtility',
+	                      dropboxClient: dropboxClient
+	                    };
+	                    dropboxItemUtility = {
+	                      driverURI: 'DropboxItemUtility',
+	                      dropboxClient: dropboxClient
+	                    };
+	                    mirrorSyncUtility = {
+	                      utilityURI: 'MirrorSyncUtility'
+	                    };
+	                    options = {
+	                      groupingItemURI: rootGroupingItemURI,
+	                      xooMLDriver: dropboxXooMLUtility,
+	                      itemDriver: dropboxItemUtility,
+	                      syncDriver: mirrorSyncUtility
+	                    };
+
+	                    $scope.itemMirror = new ItemMirror(options, function(error,im){
+	                      console.log("Item mirror created");
+	                    });
+
+	                    console.log($scope.itemMirror);
+                  	});
+                  };
+
+                  $scope.namespaceURI = 'bcmder';
+
+                  $scope.refreshIM = function(callback){
+                  	
+                  	if($scope.itemMirror != null){
+                  		var dropboxClient = $scope.dbc;
+                  		var rootGroupingItemURI = '/';
+
+                  		dropboxXooMLUtility = {
+	                      fragmentURI: '/XooML2.xml',
+	                      driverURI: 'DropboxXooMLUtility',
+	                      dropboxClient: dropboxClient
+	                    };
+	                    dropboxItemUtility = {
+	                      driverURI: 'DropboxItemUtility',
+	                      dropboxClient: dropboxClient
+	                    };
+	                    mirrorSyncUtility = {
+	                      utilityURI: 'MirrorSyncUtility'
+	                    };
+	                    options = {
+	                      groupingItemURI: rootGroupingItemURI,
+	                      xooMLDriver: dropboxXooMLUtility,
+	                      itemDriver: dropboxItemUtility,
+	                      syncDriver: mirrorSyncUtility
+	                    };
+
+	                    $scope.itemMirror = new ItemMirror(options, function(error,im){
+	                      
+	                      $scope.itemMirror.listAssociations().forEach(function(GUID){
+	               			 console.log("Getting notes property for " + GUID);
+	               			 console.log("x for "+GUID + " is " + $scope.itemMirror.getAssociationNamespaceAttribute('x',GUID,$scope.namespaceURI));
+	               			 $scope.notes[GUID] = {
+                   			  id:GUID,
+		                      content:$scope.itemMirror.getAssociationNamespaceAttribute('content',GUID,$scope.namespaceURI),
+		                      x:parseInt($scope.itemMirror.getAssociationNamespaceAttribute('x',GUID,$scope.namespaceURI),10),
+		                      y:parseInt($scope.itemMirror.getAssociationNamespaceAttribute('y',GUID,$scope.namespaceURI),10)
+		                    };
+		                    $scope.$apply();
+		                    
+                  		  });
+
+
+	                      console.log("Item mirror recreated");
+	                      
+	                      if(typeof callback !== "undefined"){
+	                      	callback();
+	                      	console.log("Callingback");
+							console.log(callback);
+						  }
+	                    });
+                  		
+                  	}
+                  };
+
+
+                  $scope.moveId = -1;
+                  $scope.moveFromX;
+                  $scope.moveFromY;
+
+                   $scope.onMouseRelease= function(event){
+                   	var mrId = $scope.moveId;
+                   	console.log("Current on mouse release move id is :" + $scope.moveId);
+                    if(mrId == -1 ){
+                      console.log("Notes not clicked on");
+                    }else{
+
+                      	console.log("animating from :" + $("#"+$scope.moveId).offset().top +"|"+ $("#"+$scope.moveId).offset().left);
+                      	console.log("animating to : " +event.clientY+ " | " + event.clientX);
+                      	$("#"+$scope.moveId).animate({
+                          top: "+="+(event.clientY-$scope.moveFromY)+"px",
+                          left: "+="+(event.clientX-$scope.moveFromX)+"px"
+                        });
+                      	console.log("mr id is " + mrId);
+	                	console.log("mr x is " + $scope.notes[mrId].x);
+	                	console.log("mr y is " + $scope.notes[mrId].y);
+	                	console.log("mr delta x start is" + parseInt($("#"+mrId).css('top'),10));
+	                	console.log("mr delta x is" + (event.clientX-$scope.moveFromX));
+	                	$scope.notes[mrId].x = parseInt($("#"+mrId).css('top'),10)+(event.clientX-$scope.moveFromX);
+	                    $scope.notes[mrId].y =  parseInt($("#"+mrId).css('left'),10)+(event.clientY-$scope.moveFromY);
+	                    console.log("New x:" + $scope.notes[mrId].x);
+	                    console.log("New y:" + $scope.notes[mrId].y);
+			           	
+			           	$scope.itemMirror.setAssociationNamespaceAttribute('x',''+$scope.notes[mrId].x,mrId,$scope.namespaceURI);          	
+			           	$scope.itemMirror.setAssociationNamespaceAttribute('y',''+$scope.notes[mrId].y,mrId,$scope.namespaceURI);
+
+			           	$scope.itemMirror.save(function(){
+			           		console.log("Note " + mrId+" saved");
+			           	});
+
+                      	$scope.moveId = -1;
+		              	$scope.moveFromY = 0;
+		              	$scope.moveFromX = 0;
+
+                    }
+
+                   };
+
+
+                   $scope.onMouseDown=function(event){
+                      console.log("event id is : " + event.currentTarget.id);
+                      console.log("EVENT TARGET id is:");
+                      console.log(event.currentTarget.id);
+                      $scope.moveId = event.currentTarget.id;//target is the inner-most specific target, currentTarget is the exterior target where the specific target belongs
+                      console.log("Current move id is "+$scope.moveId);
+                      $scope.moveFromX = event.clientX;
+                      $scope.moveFromY = event.clientY;
+                   };
+
+
+                   $scope.addNewNote=function(){
+
+	                    noteOptions ={
+	                    	displayText:"Note",
+	                    	localItem:"/"+$scope.generateUUID(),
+	                    	isGroupingItem:"True"
+	                    };
+	                    //callback addNamespaceAttribute
+                       $scope.itemMirror.createAssociation ( noteOptions, function(err,GUID){
+	                    	console.log("Creating new note..." + GUID);
+	                    	if(err){
+	                    		console.log(err);
+	                    	}
+
+                    		console.log("Adding new attrs");
+                    		//errors
+                    		//set/add actually sets/adds twice
+                    		//guid would change after setting?
+                    		
+                    		
+                    		$scope.itemMirror.setAssociationNamespaceAttribute ('content','test content', GUID, $scope.namespaceURI );
+                    		$scope.itemMirror.setAssociationNamespaceAttribute ('x','0', GUID, $scope.namespaceURI );
+                    		$scope.itemMirror.setAssociationNamespaceAttribute ('y','0', GUID, $scope.namespaceURI );
+                    		console.log("New note created:" + GUID);	
+                    		
+                    		
+                    		$scope.itemMirror.save(function(){
+	                    		console.log("Item mirror saved for new note " + GUID);
+	                    		$scope.refreshIM();	
+	                    	});	 
+                    	});
+
+	                    
+
+                   };
+
+
+                   $scope.deleteNote=function(id){
+                     console.log("Deleting");
+                     var deleteId = id;
+
+
+                     if(deleteId != -1){
+                     	console.log("Hiding note "+deleteId);
+                          
+	                    delete $scope.notes[deleteId];
+	                    $scope.itemMirror.deleteAssociation(deleteId,function(){console.log(deleteId + " deleted")});
+	                    //$scope.refreshIM();
+                     }
+                   };
+
+                   $scope.generateUUID= function(){
+        					    var d = new Date().getTime();
+        					    var uuid = 'xxxxxxxxxxxxxxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    					        var r = (d + Math.random()*16)%16 | 0;
+    					        d = Math.floor(d/16);
+					        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+					    });
+					    return uuid;
+				   };
+
+
+              });
+
+
+
+
+    </script>
+
+  </body>
+</html>

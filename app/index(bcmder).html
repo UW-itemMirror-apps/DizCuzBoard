@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en" >
+  <head>
+    <title>Angular Material - Starter App</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+
+
+    <link rel='stylesheet' href='./app/assets/Roboto.css'>
+    <link rel="stylesheet" href="./app/bower_components/angular-material/angular-material.css"/>
+    <link rel="stylesheet" href="./app/assets/app.css"/>
+    <style>
+    </style>
+  </head>
+
+
+  <body ng-app="starterApp" layout="column" style="max-width:100%;overflow-x:hidden">
+    
+<md-content flex ng-mouseup="onMouseRelease($event)" ng-controller="noteSpaceCtrl as nsc" >
+
+<!-- --------------------------------------------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------- -->
+<div ng-repeat="note in notes " >
+
+<md-button ng-attr-id="{{$index}}" class="md-raised animate-enter" style="text-transform:none;position:absolute;width:200px;top:0;left:0;height:auto;word-wrap: break-word" ng-style="{'top':note.y+'px','left':note.x+'px'}" ng-mousedown="onMouseDown($event)"  ng-mouseover="setShowId($index)" ng-mouseleave="resetShowId()">
+	<div layout="column">
+		<span style="font-size:20px;white-space: pre-wrap" flex>{{note.title}}</span>
+		<div style='text-align:left;padding:10px' ondragstart="return false;" ondrop="return false;" ng-bind-html='note.resource | sanitize'></div>
+		<div style='text-align:left;white-space: pre-wrap' layout-padding >{{note.content}}</div>
+		<div layout="row" ng-show="getShowId()===$index" class='animate-show'>
+			<span flex></span>
+			<md-button ng-click="editNote($event,$index)" class='md-accent md-hue-9'>Edit</md-button>
+			<md-button ng-click="deleteNote($index)" class='md-warn'>Delete
+				<md-tooltip>
+	         	  Cannot Undo
+	      		</md-tooltip>
+			</md-button>
+		</div>
+	</div>
+</md-button>
+<div style='position:absolute;width:0.1px;height:0.1px' ng-style="{'top':(note.y+1000)+'px','left':(note.x+1000)+'px'}"></div>
+</div>
+<!------------------------------------------------------------------------------------------>
+<!-- --------------------------------------------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------- -->
+
+  <!--the bottom toolbar-->
+    <div class="md-whiteframe-z1" layout="row" style="position:fixed;bottom:0px;left:0px;background-color:white" layout-padding>
+      <div layout="column" layout-align="center" >
+        <div >User Dummy</div>
+        <md-progress-linear  class="md-primary md-hue-1" md-mode="determinate" ng-value="50"></md-progress-linear>
+      </div>
+      <md-button class="md-icon-button" ng-click="addNewNote()">
+        <md-icon md-svg-icon="new" alt="icon" style="color:green"    ></md-icon>
+        <md-tooltip>
+         Add New Note
+      	</md-tooltip>
+      </md-button>
+      <md-button class="md-icon-button" ng-click="enlargeCanvas()">
+        <md-icon md-svg-icon="group"  alt="icon" style="color:blue"    ></md-icon>
+        <md-tooltip>
+         Enlarge Canvas
+      	</md-tooltip>
+      </md-button>
+      <md-button class="md-icon-button" ng-click="refreshIM()">
+        <md-icon md-svg-icon="checklist"  alt="icon" style="color:blue"    ></md-icon>
+      </md-button>
+    </div>
+    <!--/the bottom toolbar-->
+</md-content>
+
+<!--------------------------------------------------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------- -->
+
+    <script src="./app/bower_components/angular/angular.js"></script>
+    <script src="./app/bower_components/angular-animate/angular-animate.js"></script>
+    <script src="./app/bower_components/angular-aria/angular-aria.js"></script>
+    <script type="text/javascript" src="./app/bower_components/angular-material/angular-material.js"></script>
+    <script src="./app/dependencies/jquery-1.11.2.js"></script>
+    <script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
+    <script src="https://cdn.firebase.com/libs/angularfire/1.1.1/angularfire.min.js"></script>
+
+
+    <script type="text/javascript">
+
+
+        var app = angular
+            .module('starterApp', ['ngMaterial','firebase'])
+            .config(function($mdThemingProvider, $mdIconProvider){//configuring theme and icon
+
+              $mdIconProvider
+                  .defaultIconSet("./app/assets/svg/avatars.svg", 128)
+                  .icon("menu"       , "./app/assets/svg/menu.svg"        , 40)//sets the iconName, src, iconSize 
+                  .icon("share"      , "./app/assets/svg/share.svg"       , 40)//for later use
+                  .icon("google_plus", "./app/assets/svg/google_plus.svg" , 512)//$mdIcon('icon name')
+                  .icon("hangouts"   , "./app/app/assets/svg/hangouts.svg"    , 512)
+                  .icon("twitter"    , "./app/assets/svg/twitter.svg"     , 512)
+                  .icon("phone"      , "./app/assets/svg/phone.svg"       , 512)//icons after this line needs to be credited
+                  .icon("user","./app/assets/svg/user7.svg", 40)
+                  .icon("group","./app/assets/svg/connected22.svg", 40)
+                  .icon("namecard","./app/assets/svg/male66.svg", 40)
+                  .icon("nexus","./app/assets/svg/marketing8.svg", 40)
+                  .icon("message","./app/assets/svg/speech95.svg", 40)
+                  .icon("checklist","./app/assets/svg/election2.svg", 40)
+                  .icon("clock","./app/assets/svg/clock218.svg", 40)
+                  .icon("right","./app/assets/svg/right.svg", 40)
+                  .icon("left","./app/assets/svg/left.svg", 40)
+                  .icon("new","./app/assets/svg/addnew.svg",40);
+                  
+                  
+                  $mdThemingProvider.theme('default')//sets the theme
+                      .primaryPalette('blue')//sets the primary theme color to brown
+                      .accentPalette('green');
+
+            });
+              
+
+
+            app.controller('noteSpaceCtrl',function($scope,$q,$mdDialog,noteService){
+                     //handles local ng-click events the opens or closes interfaces
+                
+                $scope.notes = noteService.getNotes();
+  				$scope.count = 0;
+
+                $scope.moveId = -1;
+                $scope.moveFromX;
+                $scope.moveFromY;
+
+
+                $scope.onMouseRelease= function(event){
+                   	var mrId = $scope.moveId;
+	                if(mrId == -1 ){
+	                }else{
+
+	                      	
+	                  	// $("#"+$scope.moveId).animate({
+	                   //    top: "+="+(event.clientY-$scope.moveFromY)+"px",
+	                   //    left: "+="+(event.clientX-$scope.moveFromX)+"px"
+	                   //  });
+	                  	
+	                  	$scope.notes[mrId].x = parseInt($("#"+mrId).css('left'),10)+(event.clientX-$scope.moveFromX);
+	                    $scope.notes[mrId].y =  parseInt($("#"+mrId).css('top'),10) +(event.clientY-$scope.moveFromY);
+	                    $scope.notes.$save($scope.notes[new Number(mrId)]).then(function(ref){console.log("Should be saved");console.log($scope.notes[new Number(mrId)])});
+	                    console.log("mrId is " + mrId);
+	                    console.log("x is " + $scope.notes[mrId].x );
+	                    console.log("y is " + $scope.notes[mrId].y);
+
+	                  	$scope.moveId = -1;
+		              	$scope.moveFromY = 0;
+		              	$scope.moveFromX = 0;
+
+	                  }
+
+                };
+
+
+                $scope.onMouseDown=function(event){
+	                $scope.moveId = event.currentTarget.id;//target is the inner-most specific target, currentTarget is the exterior target where the specific target belongs
+	                console.log("Current move id is "+$scope.moveId);
+	                $scope.moveFromX = event.clientX;
+	                $scope.moveFromY = event.clientY;
+                };
+
+                $scope.addNewNote=function(){
+	           	    $mdDialog.show({
+						controller: function($scope, $mdDialog,noteService) {
+							var noteArr = noteService.getNotes();
+							$scope.note = {x:0,y:0,content:"",title:"",resource:""};
+							$scope.cancel = function() {
+							   $mdDialog.cancel();
+							};
+							$scope.save = function() {
+								
+
+							noteArr.$add({x:$('body>md-content')[0].scrollLeft + $('body')[0].scrollWidth/2 - 100,y:$('body>md-content')[0].scrollTop+$('body')[0].scrollHeight/2,content:$scope.note.content,title:$scope.note.title,resource:$scope.note.resource})
+			                	.then(function(x){
+								    $mdDialog.hide();
+							    });
+							};
+						},
+					      templateUrl: 'app/dialogTemp.html'
+					});
+			    };
+
+			    $scope.showId = -1;
+
+                
+			    $scope.setShowId = function(id){
+			    	$scope.showId = id;
+			    }
+
+			    $scope.getShowId = function(){
+			    	return $scope.showId;
+			    }
+
+			    $scope.resetShowId = function(){
+			    	$scope.showId = -1;
+			    }
+                    
+
+
+               $scope.deleteNote=function(id){
+               		$scope.notes.$remove(id);
+               };
+
+               $scope.editNote = function(event,id){
+               	    $mdDialog.show({
+					  controller: function($scope, $mdDialog,noteService) {
+						  var noteArr = noteService.getNotes();
+						  console.log(noteArr.$loaded().then(function(notes){
+						  	$scope.note = noteArr[id];
+						  }));
+
+						  $scope.hide = function() {
+						    $mdDialog.hide();
+						  };
+						  $scope.cancel = function() {
+						    $mdDialog.cancel();
+						  };
+						  $scope.save = function() {
+						    noteArr.$save($scope.note).then(function(x){
+							    $mdDialog.hide();
+						    });
+
+						  };
+						},
+				      templateUrl: 'app/dialogTemp.html',
+				      targetEvent: event
+				    });
+               };
+
+               $scope.generateUUID= function(){
+    					    var d = new Date().getTime();
+    					    var uuid = 'xxxxxxxxxxxxxxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+					        var r = (d + Math.random()*16)%16 | 0;
+					        d = Math.floor(d/16);
+				        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+				    });
+				    return uuid;
+			   };
+
+
+	           });
+				
+				app.service('noteService',function($firebaseArray){
+					var ref = new Firebase("https://fiery-heat-4423.firebaseio.com/");
+  					
+  				
+					return {getNotes:function(){return $firebaseArray(ref);}};
+				});
+	
+				app.filter("sanitize", ['$sce', function($sce) {
+				  return function(htmlCode){
+				    return $sce.trustAsHtml(htmlCode);
+				  }
+				}]);
+
+
+    	        app.filter('toArray', function(){
+				    return function (items) { 
+				        var filtered = [];
+				        angular.forEach(items, function(item){
+				            filtered.push(item);
+				        });
+				        return filtered;
+				    };
+				});
+
+
+
+
+    </script>
+
+  </body>
+</html>

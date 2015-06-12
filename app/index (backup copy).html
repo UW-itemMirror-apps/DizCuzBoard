@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en" >
+  <head>
+    <title>Angular Material - Starter App</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+
+
+    <link rel='stylesheet' href='./app/assets/Roboto.css'>
+    <link rel="stylesheet" href="./app/bower_components/angular-material/angular-material.css"/>
+    <link rel="stylesheet" href="./app/assets/app.css"/>
+    <style>
+    </style>
+  </head>
+
+
+  <body ng-app="starterApp" layout="column" style="max-width:100%;overflow-x:hidden">
+    
+<md-content flex ng-mouseup="onMouseRelease($event)" ng-controller="noteSpaceCtrl as nsc" >
+
+<!-- --------------------------------------------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------- -->
+<div ng-repeat="note in notes " >
+
+<md-button ng-attr-id="{{$index}}" class="md-raised animate-enter" style="text-transform:none;position:absolute;width:250px;top:0;left:0;height:auto;word-wrap: break-word" ng-style="{'top':note.y+'px','left':note.x+'px', 'z-index':getShowId()===$index?1:0}" ng-mousedown="onMouseDown($event)"  ng-mouseover="setShowId($index)" ng-mouseleave="resetShowId()" ng-show='note.deleted=="false"'>
+	<div layout="column">
+		<span style="font-size:20px;white-space: pre-wrap" ng-show="note.title!='undefined'" flex>{{note.title}}</span>
+		<div ng-show="note.resource && note.resource!='undefined'" >
+			<md-divider></md-divider>
+			<div style='text-align:left;padding:10px;white-space: pre-wrap;' ondragstart="return false;" ondrop="return false;" ng-bind-html='note.resource | sanitize'></div>
+			<md-divider></md-divider>
+		</div>
+		<div style='text-align:left;white-space: pre-wrap' ng-show="note.content!='undefined'" layout-padding >{{note.content}}</div>
+		<div layout="row" ng-show="getShowId()===$index" class='animate-show'>
+			<span flex></span>
+			<md-button ng-click="editNote($event,$index)" class='md-accent md-hue-9'>Edit</md-button>
+			<md-button ng-click="deleteNote($index)" class='md-warn'>Delete
+
+			</md-button>
+		</div>
+	</div>
+</md-button>
+<div style='position:absolute;width:0.1px;height:0.1px' ng-style="{'top':(note.y+1000)+'px','left':(note.x+1000)+'px'}"></div>
+</div>
+<!------------------------------------------------------------------------------------------>
+<!-- --------------------------------------------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------- -->
+
+  <!--the bottom toolbar-->
+    <div class="md-whiteframe-z1" layout="row" style="position:fixed;bottom:0px;left:0px;background-color:white;z-index:1000" layout-padding>
+      <div layout="column" layout-align="center" >
+        <div >Demo of Collaboard</div>
+        <md-progress-linear  ng-class='service.$getChangeState()==true?"md-warn":"md-accent"' md-mode='{{service.$getChangeState()==true?"indeterminate":"buffers"}}' ></md-progress-linear>
+      </div>
+       <md-button class="md-icon-button" ng-click="addNewNote()">
+        <md-icon md-svg-icon="new" alt="icon" style="color:green"    ></md-icon>
+        <md-tooltip>
+         Add New Note
+      	</md-tooltip>
+      </md-button>
+    </div>
+    <!--/the bottom toolbar-->
+</md-content>
+
+<!--------------------------------------------------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------- -->
+
+    <script src="./app/bower_components/angular/angular.js"></script>
+    <script src="./app/bower_components/angular-animate/angular-animate.js"></script>
+    <script src="./app/bower_components/angular-aria/angular-aria.js"></script>
+    <script type="text/javascript" src="./app/bower_components/angular-material/angular-material.js"></script>
+    <script src="./app/dependencies/jquery-1.11.2.js"></script>
+    <script type="text/javascript" src="./app/bower_components/item-mirror/item-mirror.js"></script>
+    <script type="text/javascript" src="./app/bower_components/dropbox-build/dropbox.js"></script>
+
+
+    <script type="text/javascript">
+
+
+        var app = angular
+            .module('starterApp', ['ngMaterial'])
+            .config(function($mdThemingProvider, $mdIconProvider){//configuring theme and icon
+
+              $mdIconProvider
+                  .defaultIconSet("./app/assets/svg/avatars.svg", 128)
+                  // .icon("menu"       , "./app/assets/svg/menu.svg"        , 40)//sets the iconName, src, iconSize 
+                  // .icon("share"      , "./app/assets/svg/share.svg"       , 40)//for later use
+                  // .icon("google_plus", "./app/assets/svg/google_plus.svg" , 512)//$mdIcon('icon name')
+                  // .icon("hangouts"   , "./app/app/assets/svg/hangouts.svg"    , 512)
+                  // .icon("twitter"    , "./app/assets/svg/twitter.svg"     , 512)
+                  // .icon("phone"      , "./app/assets/svg/phone.svg"       , 512)//icons after this line needs to be credited
+                   // .icon("user","./app/assets/svg/user7.svg", 40)
+                   .icon("group","./app/assets/svg/connected22.svg", 40)
+                  // .icon("namecard","./app/assets/svg/male66.svg", 40)
+                  // .icon("nexus","./app/assets/svg/marketing8.svg", 40)
+                   // .icon("message","./app/assets/svg/speech95.svg", 40)
+                   .icon("checklist","./app/assets/svg/election2.svg", 40)
+                  // .icon("clock","./app/assets/svg/clock218.svg", 40)
+                  // .icon("right","./app/assets/svg/right.svg", 40)
+                  // .icon("left","./app/assets/svg/left.svg", 40)
+                  .icon("new","./app/assets/svg/addnew.svg",40);
+                  
+                  
+                  $mdThemingProvider.theme('default')//sets the theme
+                      .primaryPalette('blue')//sets the primary theme color to brown
+                      .accentPalette('green');
+
+            });
+              
+
+
+            app.controller('noteSpaceCtrl',function($scope,$q,$mdDialog,noteService){
+                     //handles local ng-click events the opens or closes interfaces
+                    $scope.notes = noteService.getNotes(); 
+	                $scope.count = 0;
+	                $scope.moveId = -1;
+	                $scope.moveFromX;
+	                $scope.moveFromY;
+	                $scope.service = noteService;
+	                //$scope.loading = noteService.$changing;
+                
+
+                $scope.onMouseRelease= function(event){
+                   	var mrId = $scope.moveId;
+                   	noteService.$unlockRefresh();
+	                if(mrId == -1 ){
+	                }else{
+
+                  	 	
+	                      	
+	                  	// $("#"+$scope.moveId).animate({
+	                   //    top: "+="+(event.clientY-$scope.moveFromY)+"px",
+	                   //    left: "+="+(event.clientX-$scope.moveFromX)+"px"
+	                   //  });
+	                  	// console.log("Notes id:" + mrId);
+	                  	// console.log("The note obj:");
+	                  	// console.log($scope.notes[mrId]);
+	                  	$scope.notes[mrId].x = parseInt($("#"+mrId).css('left'),10)+(event.clientX-$scope.moveFromX);
+	                    $scope.notes[mrId].y =  parseInt($("#"+mrId).css('top'),10) +(event.clientY-$scope.moveFromY);
+	                    noteService.$save($scope.notes[new Number(mrId)]);
+	                    //.then(function(ref){console.log("Should be saved");console.log($scope.notes[new Number(mrId)])});
+	                    // console.log("mrId is " + mrId);
+	                    // console.log("x is " + $scope.notes[mrId].x );
+	                    // console.log("y is " + $scope.notes[mrId].y);
+
+	                  	$scope.moveId = -1;
+		              	$scope.moveFromY = 0;
+		              	$scope.moveFromX = 0;
+
+	                  }
+
+                };
+
+
+                $scope.onMouseDown=function(event){
+	                $scope.moveId = event.currentTarget.id;//target is the inner-most specific target, currentTarget is the exterior target where the specific target belongs
+	               // console.log("Current move id is "+$scope.moveId);
+	                noteService.$lockRefresh();
+	                $scope.moveFromX = event.clientX;
+	                $scope.moveFromY = event.clientY;
+                };
+
+                $scope.addNewNote=function(){
+	           	    $mdDialog.show({
+						controller: function($scope, $mdDialog,noteService) {
+							var noteArr = noteService.getNotes();
+							$scope.note = {x:0,y:0,content:"",title:"",resource:""};
+							$scope.cancel = function() {
+							   $mdDialog.cancel();
+							};
+							$scope.save = function() {
+								console.log(new Number($('body>md-content')[0].scrollLeft + $('body')[0].scrollWidth/2 - 100));
+								console.log(new Number($('body>md-content')[0].scrollTop+$('body')[0].scrollHeight/2));
+
+							noteService.$add({x:new Number($('body>md-content')[0].scrollLeft + $('body')[0].scrollWidth/2 - 100),y:new Number($('body>md-content')[0].scrollTop+$('body')[0].scrollHeight/2),content:$scope.note.content,title:$scope.note.title,resource:$scope.note.resource})
+			                setTimeout(function(){$mdDialog.hide();},100);
+								    
+							    //});
+							};
+						},
+					      templateUrl: 'app/dialogTemp.html'
+					});
+			    };
+
+			    $scope.showId = -1;
+
+                
+			    $scope.setShowId = function(id){
+			    	$scope.showId = id;
+			    }
+
+			    $scope.getShowId = function(){
+			    	return $scope.showId;
+			    }
+
+			    $scope.resetShowId = function(){
+			    	$scope.showId = -1;
+			    }
+                    
+
+
+               $scope.deleteNote=function(id){
+               		 $mdDialog.show({
+					  controller: function($scope, $mdDialog,noteService) {
+						  var noteArr = noteService.getNotes();
+						  	$scope.note = noteArr[id];
+						    noteService.$lockRefresh();
+
+						  $scope.cancel = function() {
+						    $mdDialog.cancel();
+						    noteService.$unlockRefresh();
+						  };
+						  $scope.delete = function() {
+			               		noteService.$remove(id);
+			               		noteService.$unlockRefresh();
+			               		// console.log("Removing");
+			               		// console.log(id);
+							    $mdDialog.hide();
+						  };
+						},
+				      templateUrl: 'app/deleteTemp.html',
+				      targetEvent: event
+				    });
+               };
+
+               $scope.editNote = function(event,id){
+               	    $mdDialog.show({
+					  controller: function($scope, $mdDialog,noteService) {
+						  var noteArr = noteService.getNotes();
+						  $scope.note = noteArr[id];
+						  console.log("initing diag");
+						  noteService.$lockRefresh();
+
+						  $scope.hide = function() {
+
+						  	console.log("initing hide");
+						  	noteService.$unlockRefresh();
+						    $mdDialog.hide();
+						  };
+						  $scope.cancel = function() {
+						  	console.log("initing cancel");
+						  	noteService.$unlockRefresh();
+						    $mdDialog.cancel();
+						  };
+						  $scope.save = function() {
+						  	console.log("initing save");
+						    noteService.$save($scope.note);
+						  	noteService.$unlockRefresh();
+
+						    $mdDialog.hide();
+
+						  };
+						},
+				      templateUrl: 'app/dialogTemp.html',
+				      targetEvent: event,
+				      clickOutsideToClose:false
+				    });
+               };
+
+               
+               	
+	           });
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+
+
+
+
+
+
+
+
+
+				app.service('noteService',function($itemMirror){
+					//var ref = new Firebase("https://browser-commander.firebaseio.com/");//dviz
+  					$itemMirror.$login();
+					
+					return {getNotes:function(){return $itemMirror.$itemArray},
+							$save:$itemMirror.$save,
+							$remove:$itemMirror.$remove,
+							$add:$itemMirror.$add,
+							$changing:$itemMirror.$changing,
+							$lockRefresh:$itemMirror.$lockRefresh,
+							$unlockRefresh:$itemMirror.$unlockRefresh,
+							$getChangeState:$itemMirror.$getChangeState
+							
+						};
+				});
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+
+
+
+
+
+
+
+
+
+	
+				app.filter("sanitize", ['$sce', function($sce) {
+				  return function(htmlCode){
+				    return $sce.trustAsHtml(htmlCode);
+				  }
+				}]);
+
+
+    	        app.filter('toArray', function(){
+				    return function (items) { 
+				        var filtered = [];
+				        angular.forEach(items, function(item){
+				            filtered.push(item);
+				        });
+				        return filtered;
+				    };
+				});
+
+
+
+
+
+
+
+
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+
+
+
+
+
+
+
+				app.factory('$itemMirror',function($q,$rootScope){
+					var itemMirror = {};
+					var itemArray = [];
+					var thereAreChanges = false;
+					var namespaceURI = "bcmder";
+					var startMirrorConnectionThread = function(){
+					                  	var defered = $q.defer();
+					                    var dropboxClientCredentials = {
+					                          key:'yd9mzxt3wzy4age',
+					                          secret:'xyf9f7gpg4q8owa'
+					                        };
+
+					                    var dropboxClient = new Dropbox.Client(dropboxClientCredentials);
+					                    var auth = new Dropbox.AuthDriver.Popup({
+					                              receiverUrl: 'localhost:3000/app/misc/oauth_receiver.html'
+					                    });
+
+						                defered.resolve(dropboxClient, auth);	
+
+					                    return defered.promise;
+					                  };
+
+					var login = function(){
+					                  	startMirrorConnectionThread().then( function(dropboxClient,auth){
+						                  	dropboxClient.authDriver(auth);
+						                    dropboxClient.authenticate(function (error, client){
+						                         if(!error){
+						                            authenticatedClient = client;
+						                         }else{
+						                            console.log("error in authentication");
+						                         } 
+						                    });
+						                    var rootGroupingItemURI = '/';
+
+						                    
+						                    dropboxXooMLUtility = {
+						                      fragmentURI: '/XooML2.xml',
+						                      driverURI: 'DropboxXooMLUtility',
+						                      dropboxClient: dropboxClient
+						                    };
+						                    dropboxItemUtility = {
+						                      driverURI: 'DropboxItemUtility',
+						                      dropboxClient: dropboxClient
+						                    };
+						                    mirrorSyncUtility = {
+						                      utilityURI: 'MirrorSyncUtility'
+						                    };
+						                    options = {
+						                      groupingItemURI: rootGroupingItemURI,
+						                      xooMLDriver: dropboxXooMLUtility,
+						                      itemDriver: dropboxItemUtility,
+						                      syncDriver: mirrorSyncUtility
+						                    };
+					                      
+						                    itemMirror = new ItemMirror(options, function(error,im){
+						                      console.log("Item mirror created");
+						                      refreshLoop();
+						                    });
+					                  	});
+					   };
+
+					var refreshLocked = false;
+					var refreshLoop = function(){
+					//idea!! paste a folder in there 
+
+						console.log("Are there changes? : "+thereAreChanges);
+						if(thereAreChanges){
+
+							console.log("saving");
+							itemMirror.save(function(err){
+
+								thereAreChanges= false;
+								if(err)console.log(err);
+								refreshLoop();
+							}); 
+						}
+
+						else {
+							if(!refreshLocked){
+								itemMirror.refresh ( function(){
+									itemMirror.listAssociations().forEach(function(GUID,i){
+										  //console.log("Getting notes property for " + GUID);
+											//console.log(itemArray[i]);
+										  if(typeof itemArray[i] == "undefined"){
+											  itemArray.push({
+									   			  id:GUID,
+									   			  title:itemMirror.getAssociationNamespaceAttribute('title',GUID,namespaceURI),
+									   			  resource: itemMirror.getAssociationNamespaceAttribute('resource',GUID,namespaceURI),
+									              content:itemMirror.getAssociationNamespaceAttribute('content',GUID,namespaceURI),
+									              x:parseInt(itemMirror.getAssociationNamespaceAttribute('x',GUID,namespaceURI),10),
+									              y:parseInt(itemMirror.getAssociationNamespaceAttribute('y',GUID,namespaceURI),10),
+									              deleted:itemMirror.getAssociationNamespaceAttribute('deleted',GUID,namespaceURI)
+								
+									          });
+											}
+										  else{
+											  itemArray[i].id = GUID;
+											  itemArray[i].content = itemMirror.getAssociationNamespaceAttribute('content',GUID,namespaceURI);
+									   		  itemArray[i].title = itemMirror.getAssociationNamespaceAttribute('title',GUID,namespaceURI);
+									   		  itemArray[i].resource = itemMirror.getAssociationNamespaceAttribute('resource',GUID,namespaceURI);
+									   		  itemArray[i].x = parseInt(itemMirror.getAssociationNamespaceAttribute('x',GUID,namespaceURI),10);
+									          itemArray[i].y = parseInt(itemMirror.getAssociationNamespaceAttribute('y',GUID,namespaceURI),10);
+									          itemArray[i].deleted=itemMirror.getAssociationNamespaceAttribute('deleted',GUID,namespaceURI);
+								
+										  }
+										 $rootScope.$apply();
+								    });
+								});
+						    }
+						    setTimeout(refreshLoop,3000);
+						}
+					               
+					}
+
+					var add = function(obj){
+						
+						noteOptions ={
+					    	displayText:"Note",
+					    	itemURI:"Note" + generateUUID(),
+					    	localItemRequested:false
+					    };
+					    	
+					    // // local copy
+					    	// itemArray.push({
+					    	// 	  id:"",
+					     //          content:obj.content,
+					     //          resource:obj.resource,
+					     //          title:obj.title,
+					     //          x:obj.x,
+					     //          y:obj.y,
+					     //          deleted:'false'
+					    	// })
+
+					    	// $rootScope.$apply();
+						
+					   itemMirror.createAssociation ( noteOptions, function(err,GUID){
+					    	console.log("Creating new note..." + GUID);
+					    	if(err){
+					    		console.log(err);
+					    	}
+
+						    
+							console.log("--------------------------------");
+						
+							
+							console.log("saving");
+							thereAreChanges = true;
+							
+							itemMirror.refresh(function(err){
+								if(err){
+					    			console.log(err);
+					    		}
+
+								
+								itemMirror.setAssociationNamespaceAttribute('title',obj.title,GUID,namespaceURI);
+								itemMirror.setAssociationNamespaceAttribute('resource',obj.resource,GUID,namespaceURI);	
+								itemMirror.setAssociationNamespaceAttribute('x',''+obj.x,GUID,namespaceURI);          	
+							   	itemMirror.setAssociationNamespaceAttribute('y',''+obj.y,GUID,namespaceURI);
+								itemMirror.setAssociationNamespaceAttribute('content',obj.content,GUID,namespaceURI);
+								console.log("setting deleted");
+								itemMirror.setAssociationNamespaceAttribute('deleted','false',GUID,namespaceURI);
+													
+							});
+					
+							  		
+					    });	 
+
+
+					}
+
+
+					var remove = function(deleteId){	
+
+
+						thereAreChanges = true;
+						console.log('deleting association no. ' + deleteId);
+						console.log('deleting assciation, GUID: ' + itemArray[deleteId].id);
+						
+
+						itemMirror.setAssociationNamespaceAttribute ('deleted','true', itemArray[deleteId].id, namespaceURI );
+						
+						itemArray[deleteId].isDeleted = "true";
+					}
+
+
+
+					var save = function(obj){
+
+
+						thereAreChanges = true;
+
+						//console.log("setting ansa");
+						//console.log(itemMirror);
+						itemMirror.setAssociationNamespaceAttribute ('title',obj.title, obj.id, namespaceURI );
+						itemMirror.setAssociationNamespaceAttribute ('resource',obj.resource, obj.id, namespaceURI );	
+						itemMirror.setAssociationNamespaceAttribute('x',''+obj.x,obj.id,namespaceURI);          	
+					   	itemMirror.setAssociationNamespaceAttribute('y',''+obj.y,obj.id,namespaceURI);
+						itemMirror.setAssociationNamespaceAttribute('content',obj.content,obj.id,namespaceURI);
+
+
+					}
+					var generateUUID= function(){
+    					    var d = new Date().getTime();
+    					    var uuid = 'xxxxxxxxxxxxxxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+						        var r = (d + Math.random()*16)%16 | 0;
+						        d = Math.floor(d/16);
+						        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+						    });
+					    return uuid;
+				    };
+
+					return{
+						$login:login,
+						$add:add,
+						$remove:remove,
+						$save:save,
+						$itemArray:itemArray,
+						$changing:thereAreChanges,
+						$lockRefresh:function(){
+							refreshLocked=true;
+						},
+						$unlockRefresh:function(){
+							refreshLocked=false;
+						},
+						$getChangeState:function(){
+							return thereAreChanges;
+						}
+
+					}
+
+
+				})
+
+
+
+
+
+
+
+    </script>
+
+  </body>
+</html>

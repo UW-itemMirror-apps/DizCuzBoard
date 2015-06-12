@@ -1,0 +1,20 @@
+<md-dialog aria-label="Mango (Fruit)" style="width:800px">
+  <form>
+  <md-dialog-content class="sticky-container">
+    <md-subheader class="md-sticky-no-effect">Delete confirmation</md-subheader>
+      <md-content flex><h3 style="color:red">Are you sure that you want to delete the following note: </h3><md-divider></md-divider><h4 style="text-align:center">{{note.title?note.title:"No title"}}</h4><p>{{note.content?note.content:"No content"}}</p></md-content>
+  </md-dialog-content>
+  <div class="md-actions" layout="row">
+    <span flex></span>
+    <md-button ng-click="delete()" class="md-warn" >
+     Yes
+            <md-tooltip>
+              Cannot Undo
+            </md-tooltip>
+    </md-button>
+    <md-button ng-click="cancel()" class="md-primary">
+     No
+    </md-button>
+  </div>
+  </form>
+</md-dialog>

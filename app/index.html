@@ -8,74 +8,627 @@
     <meta name="description" content="">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
 
-    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
-    <link rel="stylesheet" href="./bower_components/angular-material/angular-material.css"/>
-    <link rel="stylesheet" href="assets/app.css"/>
+
+
+    <link rel='stylesheet' href='../app/assets/Roboto.css'>
+    <link rel="stylesheet" href="../app/bower_components/angular-material/angular-material.css"/>
+    <link rel="stylesheet" href="../app/assets/app.css"/>
+    <style>
+    </style>
   </head>
 
-  <body ng-app="starterApp" layout="column" ng-controller="UserController as ul">
 
-    <md-toolbar layout="row">
-      <md-button class="menu" hide-gt-sm ng-click="ul.toggleList()" aria-label="Show User List">
-        <md-icon md-svg-icon="menu" ></md-icon>
+  <body ng-app="starterApp" layout="column" style="max-width:100%;overflow-x:hidden">
+    
+<md-content flex ng-mouseup="onMouseRelease($event)" ng-controller="noteSpaceCtrl as nsc" >
+
+<!-- --------------------------------------------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------- -->
+<div ng-repeat="note in notes " >
+
+<md-button ng-attr-id="{{$index}}" class="md-raised animate-enter" style="text-transform:none;position:absolute;width:250px;top:0;left:0;height:auto;word-wrap: break-word" ng-style="{'top':note.y+'px','left':note.x+'px', 'z-index':getShowId()===$index?1:0}" ng-mousedown="onMouseDown($event)"  ng-mouseover="setShowId($index)" ng-mouseleave="resetShowId()" ng-show='note.deleted=="false"'>
+	<div layout="column">
+		<span style="font-size:20px;white-space: pre-wrap" ng-show="note.title!='undefined'" flex>{{note.title}}</span>
+		<div ng-show="note.resource && note.resource!='undefined'" >
+			<md-divider></md-divider>
+			<div style='text-align:left;padding:10px;white-space: pre-wrap;' ondragstart="return false;" ondrop="return false;" ng-bind-html='note.resource | sanitize'></div>
+			<md-divider></md-divider>
+		</div>
+		<div style='text-align:left;white-space: pre-wrap' ng-show="note.content!='undefined'" layout-padding >{{note.content}}</div>
+		<div layout="row" ng-show="getShowId()===$index" class='animate-show'>
+			<span flex></span>
+			<md-button ng-click="editNote($event,$index)" class='md-accent md-hue-9'>Edit</md-button>
+			<md-button ng-click="deleteNote($index)" class='md-warn'>Delete
+
+			</md-button>
+		</div>
+	</div>
+</md-button>
+<div style='position:absolute;width:0.1px;height:0.1px' ng-style="{'top':(note.y+1000)+'px','left':(note.x+1000)+'px'}"></div>
+</div>
+<!------------------------------------------------------------------------------------------>
+<!-- --------------------------------------------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------- -->
+
+  <!--the bottom toolbar-->
+    <div class="md-whiteframe-z1" layout="row" style="position:fixed;bottom:0px;left:0px;background-color:white;z-index:1000" layout-padding>
+      <div layout="column" layout-align="center" >
+        <div >Demo of DizCuzBoard</div>
+        <md-progress-linear  ng-class='service.$getChangeState()==true?"md-warn":"md-accent"' md-mode='{{service.$getChangeState()==true?"indeterminate":"buffers"}}' ></md-progress-linear>
+      </div>
+       <md-button class="md-icon-button" ng-click="addNewNote()">
+        <md-icon md-svg-icon="new" alt="icon" style="color:green"    ></md-icon>
+        <md-tooltip>
+         Add New Note
+      	</md-tooltip>
       </md-button>
-      <h1>Angular Material - Starter App</h1>
-    </md-toolbar>
-
-    <div flex layout="row">
-
-        <md-sidenav md-is-locked-open="$mdMedia('gt-sm')" class="md-whiteframe-z2" md-component-id="left">
-          <md-list>
-            <md-item ng-repeat="it in ul.users">
-                <md-button ng-click="ul.selectUser(it)" ng-class="{'selected' : it === ul.selected }">
-                  <md-icon md-svg-icon="{{it.avatar}}" class="avatar"></md-icon>
-                  {{it.name}}
-                </md-button>
-            </md-item>
-          </md-list>
-        </md-sidenav>
-
-        <md-content flex id="content">
-          <md-icon md-svg-icon="{{ul.selected.avatar}}" class="avatar"></md-icon>
-          <h2>{{ul.selected.name}}</h2>
-          <p>{{ul.selected.content}}</p>
-
-          <md-button class="share" md-no-ink ng-click="ul.share($event)" aria-label="Share">
-            <md-icon md-svg-icon="share"></md-icon>
-          </md-button>
-        </md-content>
-
     </div>
+    <!--/the bottom toolbar-->
+</md-content>
 
-    <script src="./bower_components/angular/angular.js"></script>
-    <script src="./bower_components/angular-animate/angular-animate.js"></script>
-    <script src="./bower_components/angular-aria/angular-aria.js"></script>
-    <script type="text/javascript" src="./bower_components/angular-material/angular-material.js"></script>
+<!--------------------------------------------------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------- -->
 
-    <script src="./src/users/Users.js"></script>
-    <script src="./src/users/UserController.js"></script>
-    <script src="./src/users/UserService.js"></script>
+    <script src="../app/bower_components/angular/angular.js"></script>
+    <script src="../app/bower_components/angular-animate/angular-animate.js"></script>
+    <script src="../app/bower_components/angular-aria/angular-aria.js"></script>
+    <script type="text/javascript" src="../app/bower_components/angular-material/angular-material.js"></script>
+    <script src="../app/dependencies/jquery-1.11.2.js"></script>
+    <script type="text/javascript" src="../app/bower_components/item-mirror/item-mirror.js"></script>
+    <script type="text/javascript" src="../app/bower_components/dropbox-build/dropbox.js"></script>
+
 
     <script type="text/javascript">
 
-          angular
-              .module('starterApp', ['ngMaterial', 'users'])
-              .config(function($mdThemingProvider, $mdIconProvider){
+//angular app
+        var app = angular
+            .module('starterApp', ['ngMaterial'])
+            .config(function($mdThemingProvider, $mdIconProvider){//configuring theme and icon
 
-                  $mdIconProvider
-                      .defaultIconSet("./assets/svg/avatars.svg", 128)
-                      .icon("menu"       , "./assets/svg/menu.svg"        , 24)
-                      .icon("share"      , "./assets/svg/share.svg"       , 24)
-                      .icon("google_plus", "./assets/svg/google_plus.svg" , 512)
-                      .icon("hangouts"   , "./assets/svg/hangouts.svg"    , 512)
-                      .icon("twitter"    , "./assets/svg/twitter.svg"     , 512)
-                      .icon("phone"      , "./assets/svg/phone.svg"       , 512);
+                $mdIconProvider
+                    .defaultIconSet("../app/assets/svg/avatars.svg", 128)
+                    .icon("group","../app/assets/svg/connected22.svg",40)
+                    .icon("checklist","../app/assets/svg/election2.svg", 40)
+                    .icon("new","../app/assets/svg/addnew.svg",40);
+                  
+                  
+                $mdThemingProvider.theme('default')//sets the theme
+                  	.primaryPalette('blue')
+                  	.accentPalette('green');
 
-                      $mdThemingProvider.theme('default')
-                          .primaryPalette('brown')
-                          .accentPalette('red');
+            });
+              
 
-              });
+//the controller which is in charge of all events, including drag and drop
+            app.controller('noteSpaceCtrl',function($scope,$q,$mdDialog,noteService){
+                 
+                $scope.notes = noteService.getNotes(); 
+                $scope.count = 0;
+                $scope.moveId = -1;//the temp storage varible that stores the id of the mdbutton(notes on screen are actually clickable mdbuttons, they are used interchangably when refering to the view of the note) that triggered the mousedown event
+                $scope.moveFromX;
+                $scope.moveFromY;
+                $scope.service = noteService;//wrapper for itemMirror
+                
+
+                $scope.onMouseRelease= function(event){
+                   	var mrId = $scope.moveId;
+                   	noteService.$unlockRefresh();//unlocks refresh lock of the itemMirror wrapper
+	                if(mrId == -1 ){
+	                }else{
+	                	//sets the position of the mdbutton/note locally
+                      	$scope.notes[mrId].x = parseInt($("#"+mrId).css('left'),10)+(event.clientX-$scope.moveFromX);
+	                    $scope.notes[mrId].y =  parseInt($("#"+mrId).css('top'),10) +(event.clientY-$scope.moveFromY);
+	                    //saving the position via itemMirror
+	                    noteService.$save($scope.notes[new Number(mrId)]);
+	                  	//clears the variables which store the id and position of the mdbutton/note that initally triggered the mousedown event  
+	                  	$scope.moveId = -1;
+		              	$scope.moveFromY = 0;
+		              	$scope.moveFromX = 0;
+
+	                }
+
+                };
+
+
+                $scope.onMouseDown=function(event){
+	                //gets id of the mdbutton/note that is being clicked 
+	                $scope.moveId = event.currentTarget.id;//target is the inner-most specific target, currentTarget is the exterior target where the / console.log("Current move id is "+$scope.moveId);
+	                
+	                //locks the refreshloop of itemMirror
+	                noteService.$lockRefresh();
+	                //sets the coordinates where the mdbutton starts to moving
+	                $scope.moveFromX = event.clientX;
+	                $scope.moveFromY = event.clientY;
+                };
+
+                $scope.addNewNote=function(){
+                	//pop up a mdDialog box, this view component is included in the angular-material
+	           	    $mdDialog.show({
+						controller: function($scope, $mdDialog,noteService) {
+							//gets the arrays of note objects from the custom itemMirror wrapper 
+							var noteArr = noteService.getNotes();
+							$scope.note = {x:0,y:0,content:"",title:"",resource:""};
+							
+
+							$scope.cancel = function() {
+							   $mdDialog.cancel();
+							};
+
+							$scope.save = function() {
+								//adds new note obj and sends to itemMirror wrapper							
+								noteService.$add({x:new Number($('body>md-content')[0].scrollLeft + $('body')[0].scrollWidth/2 - 100),y:new Number($('body>md-content')[0].scrollTop+$('body')[0].scrollHeight/2),content:$scope.note.content,title:$scope.note.title,resource:$scope.note.resource});
+
+				                setTimeout(function(){$mdDialog.hide();},100);
+								    
+							};
+						},
+					    templateUrl: '../app/dialogTemp.html'
+					});
+			    };
+
+			    /*the following are in charge of bring notes to the foreground when mouseovering the notes*/
+			    $scope.showId = -1;
+			    
+			    //sets which notes/mdbutton to show by refering to the id of the mouseovering event
+			    $scope.setShowId = function(id){
+			    	$scope.showId = id;
+			    }
+			    //gets the id
+			    $scope.getShowId = function(){
+			    	return $scope.showId;
+			    }
+			    //resets the id
+			    $scope.resetShowId = function(){
+			    	$scope.showId = -1;
+			    }
+                    
+
+			    //deletes the note/mdbutton
+               $scope.deleteNote=function(id){
+               		$mdDialog.show({
+						controller: function($scope, $mdDialog,noteService) {
+								var noteArr = noteService.getNotes();
+							  	$scope.note = noteArr[id];
+							  	//locks itemMirror refresh to prevent auto refresh: auto-fresh would revert any changes in progress
+							    noteService.$lockRefresh();
+
+							$scope.cancel = function() {
+							    $mdDialog.cancel();
+							    noteService.$unlockRefresh();
+							};
+							
+							$scope.delete = function() {
+			               		noteService.$remove(id);
+			               		//unlocks itemMirror refresh, allows auto refresh
+			               		noteService.$unlockRefresh();
+							    $mdDialog.hide();
+							};
+						},
+				      templateUrl: '../app/deleteTemp.html',
+				      targetEvent: event
+				    });
+               };
+
+               //editing the notes
+               $scope.editNote = function(event,id){
+               	    $mdDialog.show({
+						controller: function($scope, $mdDialog,noteService) {
+							var noteArr = noteService.getNotes();
+							$scope.note = noteArr[id];
+
+							noteService.$lockRefresh();
+
+							$scope.hide = function() {
+							  	noteService.$unlockRefresh();
+							    $mdDialog.hide();
+							};
+							$scope.cancel = function() {
+							  	noteService.$unlockRefresh();
+							    $mdDialog.cancel();
+							};
+							$scope.save = function() {
+							    noteService.$save($scope.note);
+							  	noteService.$unlockRefresh();
+							    $mdDialog.hide();
+							};
+						},
+				      	templateUrl: '../app/dialogTemp.html',
+				      	targetEvent: event,
+				      	clickOutsideToClose:false
+				    });
+               };
+
+               
+               	
+	        });
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+
+
+
+
+
+
+
+
+				// the intermediate wrapper
+				app.service('noteService',function($itemMirror){
+					//var ref = new Firebase("https://browser-commander.firebaseio.com/");//dviz
+  					$itemMirror.$login();
+					
+					return {getNotes:function(){return $itemMirror.$itemArray},
+							$save:$itemMirror.$save,
+							$remove:$itemMirror.$remove,
+							$add:$itemMirror.$add,
+							$changing:$itemMirror.$changing,
+							$lockRefresh:$itemMirror.$lockRefresh,
+							$unlockRefresh:$itemMirror.$unlockRefresh,
+							$getChangeState:$itemMirror.$getChangeState
+							
+						};
+				});
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+
+
+
+
+
+
+
+
+
+				//some utility functions 
+				//for allowing html rendering 
+				app.filter("sanitize", ['$sce', function($sce) {
+				  return function(htmlCode){
+				    return $sce.trustAsHtml(htmlCode);
+				  }
+				}]);
+
+				//converts objects to arrays, e.g. associative array to array
+    	        app.filter('toArray', function(){
+				    return function (items) { 
+				        var filtered = [];
+				        angular.forEach(items, function(item){
+				            filtered.push(item);
+				        });
+				        return filtered;
+				    };
+				});
+
+
+
+
+
+
+
+
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+//<!----------------------------------------------------------------------------->
+
+
+
+
+
+
+				//itemMirror wrapper
+				app.factory('$itemMirror',function($q,$rootScope){
+					var itemMirror = {};
+					var itemArray = [];
+					var thereAreChanges = false;
+					var namespaceURI = "DizCuzBoard";
+					
+					//create dropbox client
+					var startMirrorConnectionThread = function(data){
+					var folderName = data.folderName;
+	                  	var defered = $q.defer();
+	                    var dropboxClientCredentials = {
+	                          key:'yd9mzxt3wzy4age',
+	                          secret:'xyf9f7gpg4q8owa'//please use your own here
+	                        };
+
+	                    var dropboxClient = new Dropbox.Client(dropboxClientCredentials);
+	                    var auth = new Dropbox.AuthDriver.Popup({
+	                              receiverUrl: 'https://webhost.ischool.uw.edu/~sunteng/bcmderFireMirror/app/misc/oauth_receiver.html'
+	                    });
+
+
+		                defered.resolve({dropboxClient:dropboxClient,auth:auth,folderName:folderName});	
+
+	                    return defered.promise;
+	                  };
+
+	                var getFolderName = function(){
+	                	var defered = $q.defer();
+
+                	    
+                	    
+                	    var folderName = prompt("Please enter the folder name for DizCuzBoard, you can type in the shared folder name, or leave it empty to use the root folder of your cloud storage", "");
+                	    if(typeof folderName == "undefined") {
+                	    	folderName="";
+                	    }
+                	    
+	                	defered.resolve({folderName:folderName});
+	                	return defered.promise;
+	                }
+
+	                //generates an itemMirror object
+					var login = function(){
+	                  	getFolderName().then(startMirrorConnectionThread).then( function(data){
+		                  	
+                	    	var dropboxClient = data.dropboxClient;
+                	    	var auth = data.auth;
+                	    	var folderName = data.folderName;
+
+		                  	//dropbox authentication
+		                  	dropboxClient.authDriver(auth);
+		                    dropboxClient.authenticate(function (error, client){
+		                         if(!error){
+		                            authenticatedClient = client;
+		                         }else{
+		                            console.log("error in authentication");
+		                         } 
+		                    });
+
+		                    //setup configurations for itemMirror
+		                    var rootGroupingItemURI = '/'+folderName;
+		                    dropboxXooMLUtility = {
+		                      fragmentURI: '/XooML2.xml',
+		                      driverURI: 'DropboxXooMLUtility',
+		                      dropboxClient: dropboxClient
+		                    };
+		                    dropboxItemUtility = {
+		                      driverURI: 'DropboxItemUtility',
+		                      dropboxClient: dropboxClient
+		                    };
+		                    mirrorSyncUtility = {
+		                      utilityURI: 'MirrorSyncUtility'
+		                    };
+		                    options = {
+		                      groupingItemURI: rootGroupingItemURI,
+		                      xooMLDriver: dropboxXooMLUtility,
+		                      itemDriver: dropboxItemUtility,
+		                      syncDriver: mirrorSyncUtility
+		                    };
+	                      	
+
+	                      	//creates a new/ reads an old itemMirror
+	                      	
+		                    new ItemMirror(options, function(error,im){
+		                      
+			                    console.log("Item mirror created");
+			                    console.log(im);
+			                    itemMirror = im;
+
+			                    
+			                    //note to api creator, please add error for file not found error, unable to catch them here				                     
+			                    
+		                      	refreshLoop();
+		                    });
+
+		                    
+		                    
+	                	
+	                  	});
+					};
+
+					//initialize with refresh loop unlocked
+					var refreshLocked = false;
+					//auto loop refresh function
+					var refreshLoop = function(){
+						//thereAreChanges flag are used to see if new changes needed to be store in itemMirror
+						if(thereAreChanges){
+							//save changes
+							itemMirror.save(function(err){
+								thereAreChanges= false;
+								if(err)console.log(err);
+								//recursively loop forever and ever and ever.... i donwanna close my eyes, donwanna miss a thing coz I ....
+								refreshLoop();
+							}); 
+						}
+						else {
+							//refreshLock is used to see if client is actually doing changes on the interface, locks to prevent refresh in the middling of editing
+							if(!refreshLocked){
+								//refreshes the mirror 
+								itemMirror.refresh ( function(){
+									itemMirror.listAssociations().forEach(function(GUID,i){
+									  	//if i is not in the current array, add it as a new object in the array
+									  	if(typeof itemArray[i] == "undefined"){
+										  	itemArray.push({
+								   			  	id:GUID,
+								   			  	title:itemMirror.getAssociationNamespaceAttribute('title',GUID,namespaceURI),//note to api creator, "undefined" should not be a string, I am unable to judge if the 'defined' is written by the user or the system. 
+								   			  	resource: itemMirror.getAssociationNamespaceAttribute('resource',GUID,namespaceURI),
+								              	content:itemMirror.getAssociationNamespaceAttribute('content',GUID,namespaceURI),
+								              	x:parseInt(itemMirror.getAssociationNamespaceAttribute('x',GUID,namespaceURI),10),
+								              	y:parseInt(itemMirror.getAssociationNamespaceAttribute('y',GUID,namespaceURI),10),
+								              	//deleted indicates whether to display a note/mdbutton, deleteAssociation is not used for deletion due to slowness 
+								              	deleted:itemMirror.getAssociationNamespaceAttribute('deleted',GUID,namespaceURI)
+							
+								            });
+										}
+										else{
+											//updates the current array if there is no new objects
+											itemArray[i].id = GUID;
+											itemArray[i].content = itemMirror.getAssociationNamespaceAttribute('content',GUID,namespaceURI);
+									   		itemArray[i].title = itemMirror.getAssociationNamespaceAttribute('title',GUID,namespaceURI);
+									   		itemArray[i].resource = itemMirror.getAssociationNamespaceAttribute('resource',GUID,namespaceURI);
+									   		itemArray[i].x = parseInt(itemMirror.getAssociationNamespaceAttribute('x',GUID,namespaceURI),10);
+									        itemArray[i].y = parseInt(itemMirror.getAssociationNamespaceAttribute('y',GUID,namespaceURI),10);
+									        itemArray[i].deleted=itemMirror.getAssociationNamespaceAttribute('deleted',GUID,namespaceURI);
+									
+										}
+										//refreshes the view
+										$rootScope.$apply();
+								    });
+								});
+						    }
+						    //auto-refresh for every 3000ms
+						    setTimeout(refreshLoop,3000);
+						}
+					               
+					}
+
+					var add = function(obj){
+						//parameters for creating new obj
+						noteOptions ={
+					    	displayText:"Note",
+					    	//set phantom association name with UID to reduce name collision: users may set the same title for different notes.
+					    	//e.g. 
+					    	//      Plan A                          Plan B
+					    	//Pros         Cons               Pros         Cons
+					    	
+
+					    	itemURI:"Note" + generateUUID(),
+					    	//phantom association
+					    	localItemRequested:false
+					    };
+					    //creates new association/note							
+					    itemMirror.createAssociation ( noteOptions, function(err,GUID){
+					    	if(err){
+					    		console.log(err);
+					    	}
+
+							thereAreChanges = true;
+							
+							itemMirror.refresh(function(err){
+								if(err){
+					    			console.log(err);
+					    		}
+								itemMirror.setAssociationNamespaceAttribute('title',obj.title,GUID,namespaceURI);
+								itemMirror.setAssociationNamespaceAttribute('resource',obj.resource,GUID,namespaceURI);	
+								itemMirror.setAssociationNamespaceAttribute('x',''+obj.x,GUID,namespaceURI);          	
+							   	itemMirror.setAssociationNamespaceAttribute('y',''+obj.y,GUID,namespaceURI);
+								itemMirror.setAssociationNamespaceAttribute('content',obj.content,GUID,namespaceURI);
+								itemMirror.setAssociationNamespaceAttribute('deleted','false',GUID,namespaceURI);
+													
+							});
+					
+							  		
+					    });	 
+
+
+					}
+
+
+					var remove = function(deleteId){	
+
+
+						thereAreChanges = true;
+						console.log('deleting association no. ' + deleteId);
+						console.log('deleting assciation, GUID: ' + itemArray[deleteId].id);
+						
+
+						itemMirror.setAssociationNamespaceAttribute ('deleted','true', itemArray[deleteId].id, namespaceURI );
+						//set the delete flag instead delete association: setting delete flag can be done in batch
+						itemArray[deleteId].isDeleted = "true";
+					}
+
+
+
+					var save = function(obj){
+
+
+						thereAreChanges = true;
+
+						itemMirror.setAssociationNamespaceAttribute ('title',obj.title, obj.id, namespaceURI );
+						itemMirror.setAssociationNamespaceAttribute ('resource',obj.resource, obj.id, namespaceURI );	
+						itemMirror.setAssociationNamespaceAttribute('x',''+obj.x,obj.id,namespaceURI);          	
+					   	itemMirror.setAssociationNamespaceAttribute('y',''+obj.y,obj.id,namespaceURI);
+						itemMirror.setAssociationNamespaceAttribute('content',obj.content,obj.id,namespaceURI);
+
+
+					}
+
+					//utility function to generate UUIDs
+					var generateUUID= function(){
+    					    var d = new Date().getTime();
+    					    var uuid = 'xxxxxxxxxxxxxxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+						        var r = (d + Math.random()*16)%16 | 0;
+						        d = Math.floor(d/16);
+						        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+						    });
+					    return uuid;
+				    };
+
+					return{
+						$login:login,
+						$add:add,
+						$remove:remove,
+						$save:save,
+						$itemArray:itemArray,
+						$changing:thereAreChanges,
+						$lockRefresh:function(){
+							refreshLocked=true;
+						},
+						$unlockRefresh:function(){
+							refreshLocked=false;
+						},
+						$getChangeState:function(){
+							return thereAreChanges;
+						}
+
+					}
+
+
+				})
+
+
+
+
+
+
 
     </script>
 
