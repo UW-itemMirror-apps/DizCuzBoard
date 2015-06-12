@@ -9,7 +9,7 @@ Please click allow insecure connection to continue to the site.
 
 1.What is it supposed to do? Why is this useful? For whom?
 - Collaboard is meant to be a vitual postit board for team discussions.
-- It facilitates discussio for students.
+- It facilitates discussion for students.
 
 2.Does it work?
 
