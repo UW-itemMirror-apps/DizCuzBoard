@@ -13,13 +13,17 @@ Please click allow insecure connection to continue to the site.
 
 2.Does it work?
 
-Functions
+Priority I features mostly functional
 - Add note: click on the green plus button on the lower left side of the screen, next to the user name
 - delete note: place mouse over the note you wanted to delete, and click on the delete button
 - edit note: place mouse over the note you wanted to edit, and click on the edit button
 - move note:  click the note and drag it to where you want to place it
+- automatic save: all actions save automatically, the bottom right progress bar show indicates if the app is saving 
+
+Priority II feature mostly functional, except for resizing issues and iframe stealing click event 
 - add resources to note: the resource input box is where you can input a piece of html code to include videos, html links, images and iframe widgets
-- adding links and resources: type the html source code in the resource section to add html content to the notes
+
+Priority III feature partially functional, FOUC issues not dealt with, loading requires a bit of time, out of sync problems and sometimes changes revert back 
 - collaboration: enter where the folder you shared and start collaborating
 
 
