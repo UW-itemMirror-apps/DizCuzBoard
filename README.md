@@ -24,7 +24,7 @@ Priority I features mostly functional
 Priority II feature mostly functional, except for resizing issues and iframe stealing click event 
 - add resources to note: the resource input box is where you can input a piece of html code to include videos, html links, images and iframe widgets
 
-Priority III feature mostly functional, but there are still a lot of issues, FOUC issues not dealt with, loading requires a bit of time, changes to note and add new note cannot happen simulataneously, sometimes changes revert back to refresh loop interval override, extra layer of noteService should be merged with the itemMirror wrapper,etc 
+Priority III feature mostly functional, but there are still a lot of issues, FOUC issues not dealt with, loading requires a bit of time, changes to note and add new note cannot happen simulataneously, sometimes changes revert back due to refresh loop interval override, extra layer of noteService should be merged with the itemMirror wrapper,etc 
 - collaboration: enter the folder name you shared or were invited to and start collaborating
 
 
